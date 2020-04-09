@@ -1,3 +1,7 @@
+/**
+ * Detect the scroll bar from a webpage, and execute his correct function.
+ * @class ScrollDetection
+ */
 class ScrollDetection{
     /**
      * Creates an instance of ScrollDetection.
