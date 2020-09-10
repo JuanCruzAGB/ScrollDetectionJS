@@ -1,53 +1,158 @@
 /**
- * Detect the scroll bar from a webpage, and execute his correct function.
+ * * Controls the document scroll.
+ * @export
  * @class ScrollDetection
  */
-class ScrollDetection{
+export class ScrollDetection{
     /**
-     * Creates an instance of ScrollDetection.
+     * * Creates an instance of ScrollDetection.
      * @param {object} location
      * @param {string} direction
      * @param {object} actions
      * @memberof ScrollDetection
      */
-    constructor(location, direction, actions){
-        this.location = location;
-        this.direction = direction;
-        this.actions = actions;
+    constructor(properties = {
+        location: {
+            min: 0,
+            max: 500,
+        }, direction: 'Y',
+    }, functions = {
+        success: {
+            functionName: function() { console.log('SUCCESS') },
+            params: {},
+        }, error: {
+            functionName: function() { console.log('ERROR') },
+            params: {},
+    }, }){
+        this.setProperties(properties);
+        this.setFunctions(functions);
         this.detect();
     }
+
     /**
-     * Execute or not the action.
+     * * Set the ScrollDetection properties.
+     * @param {object} properties - ScrollDetection properties.
+     * @memberof ScrollDetection
+     */
+    setProperties(properties = {
+        location: {
+            min: 0,
+            max: 500,
+        }, direction: 'Y',
+    }){
+        this.properties = {};
+        this.setLocation(properties);
+        this.setDirection(properties);
+    }
+
+    /**
+     * * Set the ScrollDetection functions.
+     * @param {object} functions - ScrollDetection functions.
+     * @memberof ScrollDetection
+     */
+    setFunctions(functions = {
+        success: {
+            functionName: function() { console.log('SUCCESS') },
+            params: {},
+        }, error: {
+            functionName: function() { console.log('ERROR') },
+            params: {},
+    }, }){
+        this.functions = {};
+        this.setSuccess(functions);
+        this.setError(functions);
+    }
+
+    /**
+     * * Set the ScrollDetection location to search.
+     * @param {object} properties - ScrollDetection properties.
+     * @memberof ScrollDetection
+     */
+    setLocation(properties = {
+        location: {
+            min: 0,
+            max: 500,
+        },
+    }){
+        this.properties.location = properties.location;
+    }
+    
+    /**
+     * * Set the ScrollDetection direction to scroll.
+     * @param {object} properties - ScrollDetection properties.
+     * @memberof ScrollDetection
+     */
+    setDirection(properties = {
+        direction: 'Y',
+    }){
+        this.properties.direction = properties.direction.toUpperCase();
+    }
+
+    /**
+     * * Set the ScrollDetection success function.
+     * @param {object} functions - ScrollDetection functions.
+     * @memberof ScrollDetection
+     */
+    setSuccess(functions = {
+        success: {
+            functionName: function() { console.log('SUCCESS') },
+            params: {},
+    }, }){
+        this.functions.success = {
+            functionName: functions.success.functionName,
+            params: (functions.success.params && typeof functions.success.params == 'object') ? functions.success.params : {},
+        };
+    }
+
+    /**
+     * * Set the ScrollDetection error function.
+     * @param {object} functions - ScrollDetection functions.
+     * @memberof ScrollDetection
+     */
+    setError(functions = {
+        error: {
+            functionName: function() { console.log('ERROR') },
+            params: {},
+    }, }){
+        this.functions.error = {
+            functionName: functions.error.functionName,
+            params: (functions.error.params && typeof functions.error.params == 'object') ? functions.error.params : {},
+        };
+    }
+
+    /**
+     * * Execute or not the action.
      * @memberof ScrollDetection
      */
     detect(){
         let instance = this;
-        window.addEventListener('scroll', function(event){
+        window.addEventListener('scroll', function(e){
             let scroll;
-            if(instance.direction == 'X'){
+            if(instance.properties.direction == 'X'){
                 scroll = this.scrollX;
-            }else if(instance.direction == 'Y'){
+            }else if(instance.properties.direction == 'Y'){
                 scroll = this.scrollY;
             }
-            if(scroll >= instance.location.min && scroll <= instance.location.max){
+            if(scroll >= instance.properties.location.min && scroll <= instance.properties.location.max){
                 ScrollDetection.check(instance, true);
             }else{
                 ScrollDetection.check(instance, false);
             }
         });
     }
+
     /**
-     * Check if the scroll is between the values.
+     * * Check if the scroll is between the values.
      * @param {ScrollDetection} instance
      * @param {boolean} bool
      * @memberof ScrollDetection
      */
     static check(instance, bool){
         if(bool){
-            instance.actions.success();
+            instance.functions.success.functionName(instance.functions.success.params);
         }else{
-            if(instance.actions.error){   
-                instance.actions.error();
+            if(instance.functions.error.functionName){   
+                instance.functions.error.functionName(instance.functions.error.params);
             }
         }
     }
