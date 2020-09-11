@@ -156,4 +156,13 @@ export class ScrollDetection{
             }
         }
     }
+
+    static currentLocation(direction = 'Y'){
+        switch(direction.toUpperCase()){
+            case 'Y':
+                return window.scrollY;
+            case 'X':
+                return window.scrollX;
+        }
+    }
 }
