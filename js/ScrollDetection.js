@@ -23,9 +23,10 @@ export class ScrollDetection{
         }, error: {
             functionName: function() { console.log('ERROR') },
             params: {},
-    }, }){
+    }, }, html = null){
         this.setProperties(properties);
         this.setFunctions(functions);
+        this.setHTML(html);
         this.detect();
     }
 
@@ -121,18 +122,37 @@ export class ScrollDetection{
     }
 
     /**
+     * * Set the ScrollDetection HTML Element to detect.
+     * @param {HTMLElement} html - ScrollDetection HTML Element.
+     * @memberof ScrollDetection
+     */
+    setHTML(html = null){
+        this.html = html;
+    }
+
+    /**
      * * Execute or not the action.
      * @memberof ScrollDetection
      */
     detect(){
-        let instance = this;
-        window.addEventListener('scroll', function(e){
-            let scroll;
+        let instance = this,
+            toScroll = window,
+            scrollPosition;
+        if(instance.properties.direction == 'X'){
+            scrollPosition = 'scrollX';
+        }else if(instance.properties.direction == 'Y'){
+            scrollPosition = 'scrollY';
+        }
+        if(this.html){
+            toScroll = this.html;
             if(instance.properties.direction == 'X'){
-                scroll = this.scrollX;
+                scrollPosition = 'scrollLeft';
             }else if(instance.properties.direction == 'Y'){
-                scroll = this.scrollY;
+                scrollPosition = 'scrollTop';
             }
+        }
+        toScroll.addEventListener('scroll', function(e){
+            let scroll = this[scrollPosition];
             if(scroll >= instance.properties.location.min && scroll <= instance.properties.location.max){
                 ScrollDetection.check(instance, true);
             }else{
