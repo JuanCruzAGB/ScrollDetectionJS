@@ -6,9 +6,18 @@
 export class ScrollDetection{
     /**
      * * Creates an instance of ScrollDetection.
-     * @param {object} location
-     * @param {string} direction
-     * @param {object} actions
+     * @param {Object} properties ScrollDetection properties.
+     * @param {Object} properties.location ScrollDetection location to detect properties.
+     * @param {Number} properties.location.min ScrollDetection min scroll to detect.
+     * @param {Number} properties.location.max ScrollDetection max scroll to detect.
+     * @param {String} properties.direction ScrollDetection direction to scroll, vertical (Y) or horizontal (X).
+     * @param {Object} callbacks ScrollDetection success & error callbacks. 
+     * @param {Object} callbacks.success ScrollDetection success callback properties.
+     * @param {Function} callbacks.success.function ScrollDetection success callback function.
+     * @param {*} callbacks.success.params ScrollDetection success callback function params.
+     * @param {Object} callbacks.error ScrollDetection error callback properties.
+     * @param {Function} callbacks.error.function ScrollDetection error callback function.
+     * @param {*} callbacks.error.params ScrollDetection error callback function params.
      * @memberof ScrollDetection
      */
     constructor(properties = {
@@ -16,22 +25,29 @@ export class ScrollDetection{
             min: 0,
             max: 500,
         }, direction: 'Y',
-    }, functions = {
+    }, callbacks = {
         success: {
-            functionName: function() { console.log('SUCCESS') },
-            params: {},
+            function: function() { /* console.log('SUCCESS') */ },
+            params: {
+                //
+            },
         }, error: {
-            functionName: function() { console.log('ERROR') },
-            params: {},
+            function: function() { /* console.log('ERROR') */ },
+            params: {
+                //
+            },
     }, }){
         this.setProperties(properties);
-        this.setFunctions(functions);
+        this.setCallbacks(callbacks);
         this.detect();
     }
 
     /**
      * * Set the ScrollDetection properties.
-     * @param {object} properties - ScrollDetection properties.
+     * @param {Object} properties.location ScrollDetection location to detect properties.
+     * @param {Number} properties.location.min ScrollDetection min scroll to detect.
+     * @param {Number} properties.location.max ScrollDetection max scroll to detect.
+     * @param {String} properties.direction ScrollDetection direction to scroll, vertical (Y) or horizontal (X).
      * @memberof ScrollDetection
      */
     setProperties(properties = {
@@ -46,26 +62,19 @@ export class ScrollDetection{
     }
 
     /**
-     * * Set the ScrollDetection functions.
-     * @param {object} functions - ScrollDetection functions.
+     * * Returns the ScrollDetection properties.
+     * @returns {Object} The ScrollDetection properties.
      * @memberof ScrollDetection
      */
-    setFunctions(functions = {
-        success: {
-            functionName: function() { console.log('SUCCESS') },
-            params: {},
-        }, error: {
-            functionName: function() { console.log('ERROR') },
-            params: {},
-    }, }){
-        this.functions = {};
-        this.setSuccess(functions);
-        this.setError(functions);
+    getProperties(){
+        return this.properties;
     }
 
     /**
-     * * Set the ScrollDetection location to search.
-     * @param {object} properties - ScrollDetection properties.
+     * * Set the ScrollDetection location to detect properties.
+     * @param {Object} properties.location ScrollDetection location to detect properties.
+     * @param {Number} properties.location.min ScrollDetection min scroll to detect.
+     * @param {Number} properties.location.max ScrollDetection max scroll to detect.
      * @memberof ScrollDetection
      */
     setLocation(properties = {
@@ -74,91 +83,265 @@ export class ScrollDetection{
             max: 500,
         },
     }){
-        this.properties.location = properties.location;
+        if (properties.hasOwnProperty('location')) {
+            this.properties.location = properties.location;
+        } else {
+            this.properties.location = {
+                min: 0,
+                max: 500,
+            };
+        }
+    }
+
+    /**
+     * * Returns the ScrollDetection location to detect properties.
+     * @returns {Object} The ScrollDetection location to detect properties.
+     * @memberof ScrollDetection
+     */
+    getLocation(){
+        return this.properties.location;
     }
     
     /**
      * * Set the ScrollDetection direction to scroll.
-     * @param {object} properties - ScrollDetection properties.
+     * @param {String} properties.direction ScrollDetection direction to scroll, vertical (Y) or horizontal (X).
      * @memberof ScrollDetection
      */
     setDirection(properties = {
         direction: 'Y',
     }){
-        this.properties.direction = properties.direction.toUpperCase();
+        this.properties.direction = {};
+        if (properties.hasOwnProperty('direction')) {
+            this.properties.direction.scrollbar = properties.direction.toUpperCase();
+        } else {
+            this.properties.direction.scrollbar = 'Y';
+        }
     }
 
     /**
-     * * Set the ScrollDetection success function.
-     * @param {object} functions - ScrollDetection functions.
+     * * Returns the ScrollDetection direction to scroll.
+     * @returns {String} The ScrollDetection direction to scroll.
      * @memberof ScrollDetection
      */
-    setSuccess(functions = {
+    getDirection(){
+        return this.properties.direction.scrollbar;
+    }
+
+    /**
+     * * Returns the ScrollDetection direction scrolled.
+     * @returns {Boolean|null} The ScrollDetection direction scrolled (true is an scrollbar superior position, false is an inferior position and null the scrollbar returns to the original position).
+     * @memberof ScrollDetection
+     */
+    getDirectionScrolled(){
+        return this.properties.direction.scrolledTo;
+    }
+
+    /**
+     * * Set the ScrollDetection callbacks.
+     * @param {Object} callbacks ScrollDetection success & error callbacks. 
+     * @param {Object} callbacks.success ScrollDetection success callback properties.
+     * @param {Function} callbacks.success.function ScrollDetection success callback function.
+     * @param {*} callbacks.success.params ScrollDetection success callback function params.
+     * @param {Object} callbacks.error ScrollDetection error callback properties.
+     * @param {Function} callbacks.error.function ScrollDetection error callback function.
+     * @param {*} callbacks.error.params ScrollDetection error callback function params.
+     * @memberof ScrollDetection
+     */
+    setCallbacks(callbacks = {
         success: {
-            functionName: function() { console.log('SUCCESS') },
-            params: {},
+            function: function() { /* console.log('SUCCESS') */ },
+            params: {
+                //
+            },
+        }, error: {
+            function: function() { /* console.log('ERROR') */ },
+            params: {
+                //
+            },
     }, }){
-        this.functions.success = {
-            functionName: functions.success.functionName,
-            params: (functions.success.params && typeof functions.success.params == 'object') ? functions.success.params : {},
-        };
+        this.callbacks = {};
+        this.setSuccess(callbacks);
+        this.setError(callbacks);
     }
 
     /**
-     * * Set the ScrollDetection error function.
-     * @param {object} functions - ScrollDetection functions.
+     * * Returns the ScrollDetection callbacks.
+     * @returns {Object} The ScrollDetection callbacks.
      * @memberof ScrollDetection
      */
-    setError(functions = {
-        error: {
-            functionName: function() { console.log('ERROR') },
-            params: {},
-    }, }){
-        this.functions.error = {
-            functionName: functions.error.functionName,
-            params: (functions.error.params && typeof functions.error.params == 'object') ? functions.error.params : {},
-        };
+    getCallbacks(){
+        return this.callbacks;
     }
 
     /**
-     * * Execute or not the action.
+     * * Set the ScrollDetection success callback.
+     * @param {Object} callbacks ScrollDetection success & error callbacks. 
+     * @param {Object} callbacks.success ScrollDetection success callback properties.
+     * @param {Function} callbacks.success.function ScrollDetection success callback function.
+     * @param {*} callbacks.success.params ScrollDetection success callback function params.
+     * @memberof ScrollDetection
+     */
+    setSuccess(callbacks = {
+        success: {
+            function: function() { /* console.log('SUCCESS') */ },
+            params: {
+                //
+            },
+    }, }){
+        this.callbacks.success = {};
+        if (callbacks.hasOwnProperty('success')) {
+            this.callbacks.success = {
+                function: callbacks.success.function,
+                params: (callbacks.success.hasOwnProperty('params')) ? callbacks.success.params : {},
+            };
+        }
+    }
+
+    /**
+     * * Returns the ScrollDetection success callback.
+     * @returns {Object} The ScrollDetection success callback.
+     * @memberof ScrollDetection
+     */
+    getSuccess(){
+        return this.callbacks.success;
+    }
+
+    /**
+     * * Check if ScrollDetection has an success callback.
+     * @returns {Boolean} The "ScrollDetection has success callback" boolean.
+     * @memberof ScrollDetection
+     */
+    hasSuccessCallback(){
+        if (this.callbacks.hasOwnProperty('success') && this.callbacks.success.hasOwnProperty('function')) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * * Set the ScrollDetection error callback.
+     * @param {Object} callbacks ScrollDetection success & error callbacks. 
+     * @param {Object} callbacks.success ScrollDetection success callback properties.
+     * @param {Function} callbacks.success.function ScrollDetection success callback function.
+     * @param {*} callbacks.success.params ScrollDetection success callback function params.
+     * @param {Object} callbacks.error ScrollDetection error callback properties.
+     * @param {Function} callbacks.error.function ScrollDetection error callback function.
+     * @param {*} callbacks.error.params ScrollDetection error callback function params.
+     * @memberof ScrollDetection
+     */
+    setError(callbacks = {
+        error: {
+            function: function() { /* console.log('ERROR') */ },
+            params: {
+                //
+            },
+    }, }){
+        this.callbacks.error = {};
+        if (callbacks.hasOwnProperty('error')) {
+            this.callbacks.error = {
+                function: callbacks.error.function,
+                params: (callbacks.error.hasOwnProperty('params')) ? callbacks.error.params : {},
+            };
+        }
+    }
+
+    /**
+     * * Returns the ScrollDetection error callback.
+     * @returns {Object} The ScrollDetection error callback.
+     * @memberof ScrollDetection
+     */
+    getError(){
+        return this.callbacks.error;
+    }
+
+    /**
+     * * Check if ScrollDetection has an error callback.
+     * @returns {Boolean} The "ScrollDetection has error callback" boolean.
+     * @memberof ScrollDetection
+     */
+    hasErrorCallback(){
+        if (this.callbacks.hasOwnProperty('error') && this.callbacks.error.hasOwnProperty('function')) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * * Detect the scrollbar event & execute the callbacks.
      * @memberof ScrollDetection
      */
     detect(){
         let instance = this;
+        let previousPosition = 0;
         window.addEventListener('scroll', function(e){
             let scroll;
-            if(instance.properties.direction == 'X'){
+            if (instance.getDirection() == 'X') {
                 scroll = this.scrollX;
-            }else if(instance.properties.direction == 'Y'){
+            } else if (instance.getDirection() == 'Y') {
                 scroll = this.scrollY;
             }
-            if(scroll >= instance.properties.location.min && scroll <= instance.properties.location.max){
-                ScrollDetection.check(instance, true);
-            }else{
-                ScrollDetection.check(instance, false);
+            if (previousPosition == 0) {
+                previousPosition = scroll;
+            }
+            instance.comparatePositions(previousPosition, scroll);
+            previousPosition = scroll;
+            if (scroll >= instance.getLocation().min && scroll <= instance.getLocation().max) {
+                ScrollDetection.execute(instance, true);
+            } else {
+                ScrollDetection.execute(instance, false);
             }
         });
     }
 
     /**
-     * * Check if the scroll is between the values.
-     * @param {ScrollDetection} instance
-     * @param {boolean} bool
+     * * Check where the scrollbar is heading.
+     * @param {Number} previousPosition Scrollbar previous position.
+     * @param {Number} newPosition Scrollbar new position.
      * @memberof ScrollDetection
      */
-    static check(instance, bool){
-        if(bool){
-            instance.functions.success.functionName(instance.functions.success.params);
-        }else{
-            if(instance.functions.error.functionName){   
-                instance.functions.error.functionName(instance.functions.error.params);
+    comparatePositions(previousPosition, newPosition){
+        if (previousPosition > newPosition) {
+            this.properties.direction.scrolledTo = true;
+        } else if(previousPosition < newPosition) {
+            this.properties.direction.scrolledTo = false;
+        } else {
+            this.properties.direction.scrolledTo = null;
+        }
+    }
+
+    /**
+     * * Executte the callback function.
+     * @param {ScrollDetection} instance ScrollDetection instance.
+     * @param {Boolean} bool Callback to execute.
+     * @memberof ScrollDetection
+     */
+    static execute(instance, bool){
+        let params;
+        if (bool) {
+            if (instance.hasSuccessCallback()) {
+                params = instance.getSuccess().params;
+                params.scrolldetection = instance;
+                instance.getSuccess().function(params);
+            }
+        } else {
+            if (instance.hasErrorCallback()) {
+                params = instance.getError().params;
+                params.scrolldetection = instance;
+                instance.getError().function(params);
             }
         }
     }
 
+    /**
+     * * Returns the scrollbar current location.
+     * @param {String} direction Scrollbar direction to scroll.
+     * @returns {Number} scrollbar current locaion.
+     * @memberof ScrollDetection
+     */
     static currentLocation(direction = 'Y'){
-        switch(direction.toUpperCase()){
+        switch (direction.toUpperCase()) {
             case 'Y':
                 return window.scrollY;
             case 'X':
