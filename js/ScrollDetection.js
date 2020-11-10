@@ -18,6 +18,7 @@ export class ScrollDetection{
      * @param {Object} callbacks.error ScrollDetection error callback properties.
      * @param {Function} callbacks.error.function ScrollDetection error callback function.
      * @param {*} callbacks.error.params ScrollDetection error callback function params.
+     * @param {HTMLElement} html Html Element to do the ScrollDetection.
      * @memberof ScrollDetection
      */
     constructor(properties = {
@@ -36,9 +37,10 @@ export class ScrollDetection{
             params: {
                 //
             },
-    }, }){
+    }, }, html = null){
         this.setProperties(properties);
-        this.setCallbacks(callbacks);
+        this.setFunctions(callbacks);
+        this.setHTML(html);
         this.detect();
     }
 
@@ -269,27 +271,50 @@ export class ScrollDetection{
     }
 
     /**
+     * * Set the HTML Element to do ScrollDetection.
+     * @param {HTMLElement|Null} html Html Element to do the ScrollDetection.
+     * @memberof ScrollDetection
+     */
+    setHTML(html = null){
+        if (html) {
+            this.html = html;
+        } else {
+            this.html = null;
+        }
+    }
+
+    /**
      * * Detect the scrollbar event & execute the callbacks.
      * @memberof ScrollDetection
      */
     detect(){
-        let instance = this;
+        let instance = this,
+            toScroll = window,
+            scrollPosition;
+        if(instance.getDirection() == 'X'){
+            scrollPosition = 'scrollX';
+        }else if(instance.getDirection() == 'Y'){
+            scrollPosition = 'scrollY';
+        }
         let previousPosition = 0;
-        window.addEventListener('scroll', function(e){
-            let scroll;
-            if (instance.getDirection() == 'X') {
-                scroll = this.scrollX;
-            } else if (instance.getDirection() == 'Y') {
-                scroll = this.scrollY;
+        if(this.html){
+            toScroll = this.html;
+            if(instance.getDirection() == 'X'){
+                scrollPosition = 'scrollLeft';
+            }else if(instance.getDirection() == 'Y'){
+                scrollPosition = 'scrollTop';
             }
+        }
+        toScroll.addEventListener('scroll', function(e){
+            let scroll = this[scrollPosition];
             if (previousPosition == 0) {
                 previousPosition = scroll;
             }
             instance.comparatePositions(previousPosition, scroll);
             previousPosition = scroll;
-            if (scroll >= instance.getLocation().min && scroll <= instance.getLocation().max) {
+            if(scroll >= instance.getLocation().min && scroll <= instance.getLocation().max){
                 ScrollDetection.execute(instance, true);
-            } else {
+            }else{
                 ScrollDetection.execute(instance, false);
             }
         });
