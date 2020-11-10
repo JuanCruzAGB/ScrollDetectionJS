@@ -39,7 +39,7 @@ export class ScrollDetection{
             },
     }, }, html = null){
         this.setProperties(properties);
-        this.setFunctions(callbacks);
+        this.setCallbacks(callbacks);
         this.setHTML(html);
         this.detect();
     }
