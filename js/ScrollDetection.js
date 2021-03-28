@@ -1,5 +1,5 @@
 // ? JuanCruzAGB repository
-import Class from "../../JuanCruzAGB/Class.js";
+import Class from "../../JuanCruzAGB/js/Class.js";
 
 /**
  * * Controls the document scroll.
@@ -30,13 +30,14 @@ export class ScrollDetection extends Class {
         location: {
             min: 0,
             max: 500,
-        }, direction: 'Y',
-    }, callbacks = {
+        }, direction: {
+            scrollbar: 'Y',
+    }}, callbacks = {
         success: {
-            function: (params) => { console.log('SUCCESS') },
+            function: function (params) { console.log('SUCCESS') },
             params: {},
         }, error: {
-            function: (params) => { console.log('ERROR') },
+            function: function (params) { console.log('ERROR') },
             params: {},
     }}, html = null){
         super(props);
@@ -57,23 +58,23 @@ export class ScrollDetection extends Class {
         let instance = this,
             toScroll = window,
             scrollPosition;
-        if(instance.props.direction.scrollbar == 'X'){
+        if(this.props.direction.scrollbar == 'X'){
             scrollPosition = 'scrollX';
-        }else if(instance.props.direction.scrollbar == 'Y'){
+        }else if(this.props.direction.scrollbar == 'Y'){
             scrollPosition = 'scrollY';
         }
         let previousPosition = 0;
         if(this.html){
             toScroll = this.html;
-            if(instance.props.direction.scrollbar == 'X'){
+            if(this.props.direction.scrollbar == 'X'){
                 scrollPosition = 'scrollLeft';
-            }else if(instance.props.direction.scrollbar == 'Y'){
+            }else if(this.props.direction.scrollbar == 'Y'){
                 scrollPosition = 'scrollTop';
             }
         }
-        toScroll.addEventListener('scroll', (e) => {
+        toScroll.addEventListener('scroll', function (e) {
             let scroll = this[scrollPosition];
-            if (previousPosition == 0) {
+            if (previousPosition === 0) {
                 previousPosition = scroll;
             }
             instance.comparatePositions(previousPosition, scroll);
@@ -109,22 +110,19 @@ export class ScrollDetection extends Class {
      * @memberof ScrollDetection
      */
     static execute (instance, bool) {
-        let params = {};
         if (bool) {
             if (instance.hasCallback('success')) {
-                params = {
+                instance.callbacks.success.function({
                     ...instance.callbacks.success.params,
                     scrolldetection: instance,
-                };
-                instance.callbacks.success.function(params);
+                });
             }
         } else {
             if (instance.hasCallback('error')) {
-                params = {
+                instance.callbacks.error.function({
                     ...instance.callbacks.error.params,
                     scrolldetection: instance,
-                };
-                instance.callbacks.error.function(params);
+                });
             }
         }
     }
