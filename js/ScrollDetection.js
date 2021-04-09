@@ -1,6 +1,20 @@
 // ? JuanCruzAGB repository
 import Class from "../../JuanCruzAGB/js/Class.js";
 
+/** @var {object} defaultProps Default properties. */
+let defaultProps = {
+    location: {
+        min: 0,
+        max: 500,
+    }, direction: {
+        scrollbar: 'Y',
+}};
+
+/** @var {object} defaultState Default state. */
+let defaultState = {
+    //
+};
+
 /**
  * * Controls the document scroll.
  * @export
@@ -40,7 +54,7 @@ export class ScrollDetection extends Class {
             function: function (params) { console.log('ERROR') },
             params: {},
     }}, html = null){
-        super(props);
+        super({ ...defaultProps, ...props });
         this.setCallbacks(callbacks);
         if (html) {
             this.setHTML(html);
