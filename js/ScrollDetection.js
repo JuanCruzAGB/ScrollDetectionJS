@@ -19,7 +19,7 @@ let defaultState = {
  * * Controls the document scroll.
  * @export
  * @class ScrollDetection
- * @author Juan Cruz Armentia <juancarmentia@gmail.com>
+ * @author Juan Cruz Armentia <juan.cruz.armentia@gmail.com>
  * @extends Class
  */
 export class ScrollDetection extends Class {
